@@ -4,7 +4,7 @@ Dependencies:
 
 ```toml
 [dependencies]
-id-generator = "0.1.0"
+id-generator = "0.2.0"
 ```
 
 Code:
