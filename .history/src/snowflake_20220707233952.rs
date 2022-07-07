@@ -26,7 +26,7 @@ impl Snowflake {
     }
 
     fn get_timestamp(&self) -> i64 {
-        Utc::now().timestamp_millis() - self.config.base_millis
+        Utc::now().timestamp_millis() - self.config.base__millis
     }
 
     fn next_timestamp(&self, timestamp: i64) -> i64 {
@@ -75,7 +75,7 @@ impl Snowflake {
 
 #[derive(Debug)]
 pub struct SnowflakeConfig {
-    pub base_millis: i64,
+    pub base__millis: i64,
     pub datacenter_id: i64,
     pub worker_id: i64,
     pub datacenter_id_bits: u8,
@@ -86,7 +86,7 @@ pub struct SnowflakeConfig {
 impl Default for SnowflakeConfig {
     fn default() -> Self {
         Self {
-            base_millis: Utc.ymd(2021, 1, 1).and_hms(0, 0, 0).timestamp_millis(),
+            base__millis: Utc.ymd(2021, 1, 1).and_hms(0, 0, 0).timestamp_millis(),
             datacenter_id: 0,
             worker_id: 0,
             datacenter_id_bits: 5,

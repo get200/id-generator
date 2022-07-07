@@ -1,6 +1,6 @@
 [package]
 name = "id-generator"
-version = "0.3.0"
+version = "0.2.0"
 edition = "2021"
 description = "generate id"
 repository = "https://github.com/get200/id-generator"

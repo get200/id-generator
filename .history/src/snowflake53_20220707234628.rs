@@ -26,7 +26,7 @@ impl Snowflake {
     }
 
     fn get_timestamp(&self) -> i64 {
-        Utc::now().timestamp_millis() - self.config.base_millis
+        Utc::now().timestamp() - self.config.base_seconds
     }
 
     fn next_timestamp(&self, timestamp: i64) -> i64 {
@@ -66,19 +66,16 @@ impl Snowflake {
 
         self.last_timestamp = current_timestamp;
 
-        current_timestamp << self.config.timestamp_left_shift()
-            | self.config.datacenter_id << self.config.datacenter_id_left_shift()
-            | self.config.worker_id << self.config.worker_id_left_shift()
+        current_timestamp << self.config.timestamp_shift()
+            | self.config.worker_id << self.config.worker_id_shift()
             | self.sequence
     }
 }
 
 #[derive(Debug)]
 pub struct SnowflakeConfig {
-    pub base_millis: i64,
-    pub datacenter_id: i64,
+    pub base_seconds: i64,
     pub worker_id: i64,
-    pub datacenter_id_bits: u8,
     pub worker_id_bits: u8,
     pub sequence_bits: u8,
 }
@@ -86,12 +83,10 @@ pub struct SnowflakeConfig {
 impl Default for SnowflakeConfig {
     fn default() -> Self {
         Self {
-            base_millis: Utc.ymd(2021, 1, 1).and_hms(0, 0, 0).timestamp_millis(),
-            datacenter_id: 0,
+            base_seconds: Utc.ymd(2022, 1, 1).and_hms(0, 0, 0).timestamp(),
             worker_id: 0,
-            datacenter_id_bits: 5,
             worker_id_bits: 5,
-            sequence_bits: 12,
+            sequence_bits: 16,
         }
     }
 }
@@ -102,12 +97,6 @@ impl SnowflakeConfig {
     }
 
     fn is_valid(&self) -> bool {
-        let mask = -1_i64 << self.datacenter_id_bits;
-        if self.datacenter_id & mask != 0 {
-            error!("invalid datacenter_id {}.", self.datacenter_id);
-            return false;
-        }
-
         let mask = -1_i64 << self.worker_id_bits;
         if self.worker_id & mask != 0 {
             error!("invalid worker_id {}.", self.worker_id);
@@ -122,17 +111,12 @@ impl SnowflakeConfig {
     }
 
     #[inline(always)]
-    fn timestamp_left_shift(&self) -> u8 {
-        self.datacenter_id_bits + self.worker_id_bits + self.sequence_bits
-    }
-
-    #[inline(always)]
-    fn datacenter_id_left_shift(&self) -> u8 {
+    fn timestamp_shift(&self) -> u8 {
         self.worker_id_bits + self.sequence_bits
     }
 
     #[inline(always)]
-    fn worker_id_left_shift(&self) -> u8 {
+    fn worker_id_shift(&self) -> u8 {
         self.sequence_bits
     }
 }
