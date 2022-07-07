@@ -12,4 +12,4 @@ license = "MIT OR Apache-2.0"
 [dependencies]
 lazy_static = "1.4.0"
 chrono = "0.4.19"
-log = "0.4.17"
+log = "0.4.14"
